@@ -4,11 +4,11 @@ set -eu
 
 # shellcheck disable=SC2034
 VERSION=0.1
+PROG=${0##*/}
 
-# shellcheck disable=SC1083
 parser_definition() {
 	setup   REST help:usage abbr:true -- \
-		"Usage: ${2##*/} [global options...] [command] [options...] [arguments...]"
+		"Usage: $PROG [global options...] [command] [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    GLOBAL  -g --global    -- "global flag"
@@ -21,60 +21,49 @@ parser_definition() {
 	cmd cmd3 -- "subcommand 3"
 }
 
-# shellcheck disable=SC1083
 parser_definition_cmd1() {
 	setup   REST help:usage abbr:true -- \
-		"Usage: ${2##*/} cmd1 [options...] [arguments...]"
+		"Usage: $PROG cmd1 [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_A  -a --flag-a
 	disp    :usage  -h --help
 }
 
-# shellcheck disable=SC1083
 parser_definition_cmd2() {
 	setup   REST help:usage abbr:true -- \
-		"Usage: ${2##*/} cmd2 [options...] [arguments...]"
+		"Usage: $PROG cmd2 [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_B  -b --flag-b
 	disp    :usage  -h --help
 }
 
-# shellcheck disable=SC1083
 parser_definition_cmd3() {
 	setup   REST help:usage abbr:true -- \
-		"Usage: ${2##*/} cmd3 [options...] [arguments...]"
+		"Usage: $PROG cmd3 [options...] [arguments...]"
 	msg -- '' 'getoptions subcommand example' ''
 	msg -- 'Options:'
 	flag    FLAG_C  -c --flag-c
 	disp    :usage  -h --help
 }
 
-eval "$(getoptions parser_definition parse "$0") exit 1"
-parse "$@"
-eval "set -- $REST"
+eval "$(getoptions parser_definition) exit 1"
 
 if [ $# -gt 0 ]; then
 	cmd=$1
 	shift
 	case $cmd in
 		cmd1)
-			eval "$(getoptions parser_definition_cmd1 parse "$0")"
-			parse "$@"
-			eval "set -- $REST"
+			eval "$(getoptions parser_definition_cmd1)"
 			echo "FLAG_A: $FLAG_A"
 			;;
 		cmd2)
-			eval "$(getoptions parser_definition_cmd2 parse "$0")"
-			parse "$@"
-			eval "set -- $REST"
+			eval "$(getoptions parser_definition_cmd2)"
 			echo "FLAG_B: $FLAG_B"
 			;;
 		cmd3)
-			eval "$(getoptions parser_definition_cmd3 parse "$0")"
-			parse "$@"
-			eval "set -- $REST"
+			eval "$(getoptions parser_definition_cmd3)"
 			echo "FLAG_C: $FLAG_C"
 			;;
 		--) # no subcommand, arguments only

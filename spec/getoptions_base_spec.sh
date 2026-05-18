@@ -1,5 +1,4 @@
-# shellcheck shell=sh disable=SC1083,SC2004,SC2016
-
+# shellcheck shell=sh disable=SC1083,SC2016,SC2317
 Describe "getoptions()"
 	Include ./lib/getoptions_base.sh
 
@@ -128,6 +127,24 @@ Describe "getoptions()"
 			It "displays error"
 				When run parse -x
 				The stderr should eq "Unrecognized option: -x"
+				The status should be failure
+			End
+		End
+
+		Context "when the combined short option ends in -"
+			parser_definition() { setup ARGS; flag FLAG -f; }
+			It "displays error"
+				When run parse -f-
+				The stderr should eq "Unrecognized option: --"
+				The status should be failure
+			End
+		End
+
+		Context "when the combined short option contains -"
+			parser_definition() { setup ARGS; flag FLAG -f --flag; }
+			It "displays error"
+				When run parse -f-flag
+				The stderr should eq "Unrecognized option: --flag"
 				The status should be failure
 			End
 		End
